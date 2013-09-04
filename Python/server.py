@@ -12,43 +12,84 @@
 # Licence:     Open Source
 #-------------------------------------------------------------------------------
 
-import socket, sys
+import socket, sys, os, subprocess
+
+if sys.platform == 'linux-i386' or sys.platform == 'linux2' or sys.platform == 'darwin':
+	SysClS = 'clear'
+elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'ms-dos':
+	SysCls = 'cls'
+else:
+	SysCls = 'unknown'
+
+print "\n\n"
+print "\t\t________                       ___________.__"
+print "\t\t\_____  \ ______   ____   ____ \_   _____/|__|______   ____ "
+print "\t\t /   |   \\____ \_/ __ \ /    \ |    __)  |  \_  __ \_/ __ \ "
+print "\t\t/    |    \  |_> >  ___/|   |  \|     \   |  ||  | \/\  ___/ "
+print "\t\t\_______  /   __/ \___  >___|  /\___  /   |__||__|    \___  >"
+print "\t\t        \/|__|        \/     \/     \/                    \/"
+print "\t\t                                           Socket Server\n\n"
+
 
 try:
     port_bind = int(raw_input("Enter port to bind : "))
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_sock.bind(("0.0.0.0", port_bind))
-    server_sock.listen(4)
+    server_sock.listen(10)
 except Exception as e:
     print e
 
 try:
-    print "\n[#] Waiting for a client to connect on port : %d " % port_bind
+    while True:
+        print "\n[#] Waiting for a new client to connect on port : %d " % port_bind
 
-    (client, (ip, port)) = server_sock.accept()
+        (client, (ip, port)) = server_sock.accept()
 
-    print "[#] Received connection from a client"
-    print "[#] Client : ( %s : %s )" % (str(ip), str(port))
+        print "[#] Received new connection from a client"
+        print "[#] Client : ( %s : %s )" % (str(ip), str(port))
 
-    print "[+] Server ready to receive data from client.. \n"
+        print "[+] Server ready to receive data from client.. \n"
 
-    data = "anything"
+        data = "anything"
 
-    while len(data) :
+        while len(data) :
 
-        data = client.recv(2048)
-        if not data: break
-        print "\n[+] Client sent: %s \n" % data
-        client.send(raw_input("Enter text to send to client : "))
+            data = client.recv(2048)
+            if not data:
+                break
+            elif data[:10] == 'command : ':
+                print "\n[+] Client sent a command to execute. Command : %s" % data[10:]
+                try:
+                    if sys.platform == 'linux-i386' or sys.platform == 'linux2' or sys.platform == 'darwin':
+                        new_data = subprocess.Popen(["/bin/sh", '-c', data[10:]],stdout=subprocess.PIPE).communicate()[0]
+                        client.send("\n %s " % new_data)
+                        print "Sent Command response to client"
+                        continue
+                    elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'ms-dos':
+                        new_data = subprocess.Popen(data[10:],stdout=subprocess.PIPE).communicate()[0]
+                        client.send("\n %s " % new_data)
+                        print "Sent Command response"
+                        continue
+                    else:
+                        print "[=] System plattform not detected to execute commands."
+                        continue
+                except Exception as e:
+                    client.send("Seems you sent a wrong command to get executed, Error occured!", e)
+                    continue
+            print "\n[+] Client sent: %s \n" % data
+            data_send = raw_input("Enter text to send to client : ")
+            if data_send == "shut down server":
+                print "[=] User asked to shut down server"
+                print "[=] Shutting server socket.. "
+                server_sock.close()
+                sys.exit()
+            else:
+                client.send(data_send)
 
 
-
-    print "[=] Connection closed by client.."
-    client.close()
-
-    print "[=] Shutting server socket.. "
-    server_sock.close()
+        print "[=] Connection closed by client.."
+        client.close()
 except KeyboardInterrupt:
     print "CTRL^C Pressed, Shutting server"
     sys.exit()
