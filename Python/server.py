@@ -30,6 +30,16 @@ print "\t\t\_______  /   __/ \___  >___|  /\___  /   |__||__|    \___  >"
 print "\t\t        \/|__|        \/     \/     \/                    \/"
 print "\t\t                                           Socket Server\n\n"
 
+def help():
+    print "\n[#] USAGE: server.py"
+    print "[#] EX: server.py"
+    print "[+] After executing you will need to give a PORT to get bind & after binding it will start listening for connections"
+    print "[+] This is server socket"
+    print "[+] Client can easily connect to server and start chatting with server,\n[+] Server can also send commands to client to get executed & vice versa"
+    print "[+] To send commands to client : "
+    print "[+]      command : command_to_execute"
+    print "[+]      like - command : ipconfig"
+    print "[=] NOTE : All the cmd commands may not execute currently."
 
 try:
     port_bind = int(raw_input("Enter port to bind : "))
@@ -38,7 +48,12 @@ try:
     server_sock.bind(("0.0.0.0", port_bind))
     server_sock.listen(10)
 except Exception as e:
-    print e
+    print "It seems you entered alpha character. PORT must be numberic (integer)"
+    sys.exit()
+except KeyboardInterrupt:
+    print "CTRL^C pressed, Shutting program"
+    sys.exit()
+
 
 try:
     while True:

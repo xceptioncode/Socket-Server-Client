@@ -33,7 +33,14 @@ print "\t\t                                           Socket Client\n\n"
 
 def help():
     print "\n[#] USAGE: client.py IP PORT"
-    print "[#] EX: client.py 111.111.1.11 8000"
+    print "[#] EX: client.py 111.111.1.11 8000\n"
+    print "[+] This is client socket"
+    print "[+] Client can easily connect to server and start chatting with server,\n[+] Client can also send commands to server to get executed & vice versa"
+    print "[+] To send commands to server : "
+    print "[+]      command : command_to_execute"
+    print "[+]      like - command : ipconfig"
+    print "[=] NOTE : All the cmd commands may not execute currently."
+
     exit()
 
 try:
@@ -52,7 +59,9 @@ try:
         try:
             data =  raw_input("Enter text to send to server : ")
         except KeyboardInterrupt:
-            "CTRL^C Pressed, Shutting client"
+            print "CTRL^C Pressed, Shutting client"
+            sock.close()
+            sys.exit()
         sock.send(data)
         while True:
             data_recv = sock.recv(104448)
