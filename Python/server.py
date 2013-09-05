@@ -21,6 +21,8 @@ elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'm
 else:
 	SysCls = 'unknown'
 
+os.system(SysCls)
+
 print "\n\n"
 print "\t\t________                       ___________.__"
 print "\t\t\_____  \ ______   ____   ____ \_   _____/|__|______   ____ "

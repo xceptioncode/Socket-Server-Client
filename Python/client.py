@@ -12,7 +12,7 @@
 # Licence:     Open Source
 #-------------------------------------------------------------------------------
 
-import socket, sys, subprocess
+import socket, sys, subprocess, os
 
 if sys.platform == 'linux-i386' or sys.platform == 'linux2' or sys.platform == 'darwin':
 	SysClS = 'clear'
@@ -20,6 +20,8 @@ elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'm
 	SysCls = 'cls'
 else:
 	SysCls = 'unknown'
+
+os.system(SysCls)
 
 print "\n\n"
 print "\t\t________                       ___________.__"
